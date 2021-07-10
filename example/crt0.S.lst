@@ -1,0 +1,471 @@
+   1               	# 1 "crt0.S"
+   1               	#include "asm.h"
+   0               	
+   0               	
+   1               	/*
+   2               	#include "mc68332.inc"
+   1               	*
+   2               	*       MOTOROLA, INC.
+   3               	*       Advanced MCU Division
+   4               	*       Austin, Texas
+   5               	*
+   6               	*       Title : EQUATES
+   7               	*       Description : This is a table of EQUates for all of the
+   8               	*                     registers in the MC68332.
+   9               	**************************************************************************
+  10               	
+  11               	
+  12               	*****  SIM Module Registers  *****
+  13               	
+  14               	.equ SIMCR     ,0xFFFA00           //SIM Module Configuration Register
+  15               	.equ SIMTR     ,0xFFFA02           //System Integration Test Register
+  16               	.equ SYNCR     ,0xFFFA04           //Clock Synthesizer Control Register
+  17               	.equ RSR       ,0xFFFA07           //Reset Status Register
+  18               	.equ SIMTRE    ,0xFFFA08           //System Integration Test Register (E Clock)
+  19               	.equ PORTE0    ,0xFFFA11           //Port E Data Register (same data as PORTE1)
+  20               	.equ PORTE1    ,0xFFFA13           //Port E Data Register (same data as PORTE0)
+  21               	.equ DDRE      ,0xFFFA15           //Port E Data Direction Register
+  22               	.equ PEPAR     ,0xFFFA17           //Port E Pin Assignment Register
+  23               	.equ PORTF0    ,0xFFFA19           //Port F Data Register (same data as PORTF1)
+  24               	.equ PORTF1    ,0xFFFA1B           //Port F Data Register (same data as PORTF0)
+  25               	.equ DDRF      ,0xFFFA1D           //Port F Data Direction Register
+  26               	.equ PFPAR     ,0xFFFA1F           //Port F Pin Assignment Register
+  27               	.equ SYPCR     ,0xFFFA21           //System Protection Control Register
+  28               	.equ PICR      ,0xFFFA22           //Periodic Interrupt Control Register
+  29               	.equ PITR      ,0xFFFA24           //Periodic Interrupt Timing Register
+  30               	.equ SWSR      ,0xFFFA27           //Software Service Register
+  31               	.equ TSTMSRA   ,0xFFFA30           //Master Shift Register A
+  32               	.equ TSTMSRB   ,0xFFFA32           //Master Shift Register B
+  33               	.equ TSTSC     ,0xFFFA34           //Test Module Shift Count
+  34               	.equ TSTRC     ,0xFFFA36           //Test Module Repetition Count
+  35               	.equ CREG      ,0xFFFA38           //Test Submodule Control Register
+  36               	.equ DREG      ,0xFFFA3A           //Distributed Register
+  37               	.equ PORTC     ,0xFFFA41           //Port C Data Register
+  38               	.equ CSPAR0    ,0xFFFA44           //Chip-Select Pin Assignment Register 0
+  39               	.equ CSPAR1    ,0xFFFA46           //Chip-Select Pin Assignment Register 1
+  40               	.equ CSBARBT   ,0xFFFA48           //Chip-Select Boot Base Address Register
+  41               	.equ CSORBT    ,0xFFFA4A           //Chip-Select Boot Option Register
+  42               	.equ CSBAR0    ,0xFFFA4C           //Chip-Select 0 Base Address Register
+  43               	.equ CSOR0     ,0xFFFA4E           //Chip Select 0 Option Register 
+  44               	.equ CSBAR1    ,0xFFFA50           //Chip-Select 1 Base Address Register
+  45               	.equ CSOR1     ,0xFFFA52           //Chip-Select 1 Option Register
+  46               	.equ CSBAR2    ,0xFFFA54           //Chip-Select 2 Base Address Register
+  47               	.equ CSOR2     ,0xFFFA56           //Chip-Select 2 Option Register
+  48               	.equ CSBAR3    ,0xFFFA58           //Chip-Select 3 Base Address Register
+  49               	.equ CSOR3     ,0xFFFA5A           //Chip-Select 3 Option Register
+  50               	.equ CSBAR4    ,0xFFFA5C           //Chip-Select 4 Base Address Register
+  51               	.equ CSOR4     ,0xFFFA5E           //Chip-Select 4 Option Register
+  52               	.equ CSBAR5    ,0xFFFA60           //Chip-Select 5 Base Address Register
+  53               	.equ CSOR5     ,0xFFFA62           //Chip-Select 5 Option Register
+  54               	.equ CSBAR6    ,0xFFFA64           //Chip-Select 6 Base Address Register
+  55               	.equ CSOR6     ,0xFFFA66           //Chip-Select 6 Option Register
+  56               	.equ CSBAR7    ,0xFFFA68           //Chip-Select 7 Base Address Register
+  57               	.equ CSOR7     ,0xFFFA6A           //Chip-Select 7 Option Register
+  58               	.equ CSBAR8    ,0xFFFA6C           //Chip-Select 8 Base Address Register
+  59               	.equ CSOR8     ,0xFFFA6E           //Chip-Select 8 Option Register
+  60               	.equ CSBAR9    ,0xFFFA70           //Chip-Select 9 Base Address Register
+  61               	.equ CSOR9     ,0xFFFA72           //Chip-Select 9 Option Register
+  62               	.equ CSBAR10   ,0xFFFA74           //Chip-Select 10 Base Address Register
+  63               	.equ CSOR10    ,0xFFFA76           //Chip-Select 10 Option Register
+  64               	
+  65               	
+  66               	*****  SRAM Module Registers  *****
+  67               	
+  68               	.equ TRAMMCR   ,0xFFFB00           //RAM Module Configuration Register
+  69               	.equ TRAMTST   ,0xFFFB02           //RAM Test Register
+  70               	.equ TRAMBAR   ,0xFFFB04           //RAM Base Address High Register
+  71               	
+  72               	*****  QSM Address Map *****
+  73               	
+  74               	.equ QSMMCR    ,0xFFFC00           //QSM Module Configuration Register
+  75               	.equ QTEST     ,0xFFFC02           //QSM Test Register
+  76               	.equ QUILR     ,0xFFFC04           //QSM Interrupt Levels Register
+  77               	.equ QIVR      ,0xFFFC05           //QSM Interrupt Vector Register
+  78               	.equ SCCR0     ,0xFFFC08           //SCI Control Register 0
+  79               	.equ SCCR1     ,0xFFFC0A           //SCI Control Register 1
+  80               	.equ SCSR      ,0xFFFC0C           //SCI Status Register
+  81               	.equ SCDR      ,0xFFFC0E           //SCI Data Register
+  82               	.equ PORTQS    ,0xFFFC15           //QSM Port Data Register
+  83               	.equ PQSPAR    ,0xFFFC16           //QSM Pin Assignment Register
+  84               	.equ DDRQS     ,0xFFFC17           //QSM Data Direction Register
+  85               	.equ SPCR0     ,0xFFFC18           //QSPI Control Register 0
+  86               	.equ SPCR1     ,0xFFFC1A           //QSPI Control Register 1
+  87               	.equ SPCR2     ,0xFFFC1C           //QSPI Control Register 2
+  88               	.equ SPCR3     ,0xFFFC1E           //QSPI Control Register 3
+  89               	.equ SPSR      ,0xFFFC1F           //QSPI Status Register
+  90               	.equ RR0       ,0xFFFD00           //spi rec.ram 0
+  91               	.equ RR1       ,0xFFFD02           //spi rec.ram 1
+  92               	.equ RR2       ,0xFFFD04           //spi rec.ram 2
+  93               	.equ RR3       ,0xFFFD06           //spi rec.ram 3
+  94               	.equ RR4       ,0xFFFD08           //spi rec.ram 4
+  95               	.equ RR5       ,0xFFFD0A           //spi rec.ram 5
+  96               	.equ RR6       ,0xFFFD0C           //spi rec.ram 6
+  97               	.equ RR7       ,0xFFFD0E           //spi rec.ram 7
+  98               	.equ RR8       ,0xFFFD00           //spi rec.ram 8
+  99               	.equ RR9       ,0xFFFD02           //spi rec.ram 9
+ 100               	.equ RRA       ,0xFFFD04           //spi rec.ram A
+ 101               	.equ RRB       ,0xFFFD06           //spi rec.ram B
+ 102               	.equ RRC       ,0xFFFD08           //spi rec.ram C
+ 103               	.equ RRD       ,0xFFFD0A           //spi rec.ram D
+ 104               	.equ RRE       ,0xFFFD0C           //spi rec.ram E
+ 105               	.equ RRF       ,0xFFFD0E           //spi rec.ram F
+ 106               	.equ TR0       ,0xFFFD20           //spi txd.ram 0
+ 107               	.equ TR1       ,0xFFFD22           //spi txd.ram 1
+ 108               	.equ TR2       ,0xFFFD24           //spi txd.ram 2
+ 109               	.equ TR3       ,0xFFFD26           //spi txd.ram 3
+ 110               	.equ TR4       ,0xFFFD28           //spi txd.ram 4
+ 111               	.equ TR5       ,0xFFFD2A           //spi txd.ram 5
+ 112               	.equ TR6       ,0xFFFD2C           //spi txd.ram 6
+ 113               	.equ TR7       ,0xFFFD2E           //spi txd.ram 7
+ 114               	.equ TR8       ,0xFFFD30           //spi txd.ram 8
+ 115               	.equ TR9       ,0xFFFD32           //spi txd.ram 9
+ 116               	.equ TRA       ,0xFFFD34           //spi txd.ram A
+ 117               	.equ TRB       ,0xFFFD36           //spi txd.ram B
+ 118               	.equ TRC       ,0xFFFD38           //spi txd.ram C
+ 119               	.equ TRD       ,0xFFFD3A           //spi txd.ram D
+ 120               	.equ TRE       ,0xFFFD3C           //spi txd.ram E
+ 121               	.equ TRF       ,0xFFFD3E           //spi txd.ram F
+ 122               	.equ CR0       ,0xFFFD40           //spi cmd.ram 0
+ 123               	.equ CR1       ,0xFFFD41           //spi cmd.ram 1
+ 124               	.equ CR2       ,0xFFFD42           //spi cmd.ram 2
+ 125               	.equ CR3       ,0xFFFD43           //spi cmd.ram 3
+ 126               	.equ CR4       ,0xFFFD44           //spi cmd.ram 4
+ 127               	.equ CR5       ,0xFFFD45           //spi cmd.ram 5
+ 128               	.equ CR6       ,0xFFFD46           //spi cmd.ram 6
+ 129               	.equ CR7       ,0xFFFD47           //spi cmd.ram 7
+ 130               	.equ CR8       ,0xFFFD48           //spi cmd.ram 8
+ 131               	.equ CR9       ,0xFFFD49           //spi cmd.ram 9
+ 132               	.equ CRA       ,0xFFFD4A           //spi cmd.ram A
+ 133               	.equ CRB       ,0xFFFD4B           //spi cmd.ram B
+ 134               	.equ CRC       ,0xFFFD4C           //spi cmd.ram C
+ 135               	.equ CRD       ,0xFFFD4D           //spi cmd.ram D
+ 136               	.equ CRE       ,0xFFFD4E           //spi cmd.ram E
+ 137               	.equ CRF       ,0xFFFD4F           //spi cmd.ram F
+ 138               	
+ 139               	*****  TPU Time Processor Unit  *****
+ 140               	 
+ 141               	.equ TPUMCR    ,0xFFFE00           //TPU Module Configuration Register
+ 142               	.equ TCR       ,0xFFFE02           //Test Configuration Register
+ 143               	.equ DSCR      ,0xFFFE04           //Development Support Control Register
+ 144               	.equ DSSR      ,0xFFFE06           //Development Support Status Register
+ 145               	.equ TICR      ,0xFFFE08           //TPU Interrupt Configuration Register
+ 146               	.equ CIER      ,0xFFFE0A           //Channel interrupt Enable Register
+ 147               	.equ CFSR0     ,0xFFFE0C           //Channel Function Select Register 0
+ 148               	.equ CFSR1     ,0xFFFE0E           //Channel Function Select Register 1
+ 149               	.equ CFSR2     ,0xFFFE10           //Channel Function Select Register 2
+ 150               	.equ CFSR3     ,0xFFFE12           //Channel Function Select Register 3
+ 151               	.equ HSQR0     ,0xFFFE14           //Host Sequence Register 0
+ 152               	.equ HSQR1     ,0xFFFE16           //Host Sequence Register 1
+ 153               	.equ HSRR0     ,0xFFFE18           //Host Service Request Register 0
+ 154               	.equ HSRR1     ,0xFFFE1A           //Host Service REquest Register 1
+ 155               	.equ CPR0      ,0xFFFE1C           //Channel Priority Register 0
+ 156               	.equ CPR1      ,0xFFFE1E           //Channel Priority Register 1
+ 157               	.equ CISR      ,0xFFFE20           //Channel Interrupt Status Register
+ 158               	.equ LR        ,0xFFFE22           //Link Register
+ 159               	.equ SGLR      ,0xFFFF24           //Service Grant Latch Register
+ 160               	.equ DCNR      ,0xFFFF26           //Decoded Channel Number Register
+ 161               	
+ 162               	.equ PRAM      ,0xFFFF00           //TPU Parameter RAM (Start address)
+ 163               	...
+   3               	
+   4               	  .title "crt0.S"
+   5               	
+   6               	  .extern SYM(main)
+   7               	  .extern __stack
+   8               	  .extern __bss_start
+   9               	  .extern __text_start
+  10               	  .extern SYM(init_main)
+  11               	
+  12               	  .align 2
+  13               	  .section  .text
+  14               	
+  15               	__start:
+  16               	  /* disable all interrupts on startup. */
+  17 0000 4E71      	  nop
+  18 0002 46FC 2700 	  move.w  #0x2700, sr
+  19               	
+  20               	setup_system_module:
+  21               	  /* enable supervisor and map the register block to 0xfff000 */
+  22               	  /*move.w #0x604f,SIMCR*/
+  23 0006 33FC 01CF 	  move.w #0x1cf,SIMCR
+  23      00FF FA00 
+  24               	
+  25               	setup_system_protection:
+  26               	  /* enable external bus monitor */
+  27 000e 13FC 0006 	  move.b #0x6,SYPCR
+  27      00FF FA21 
+  28               	
+  29               	setup_clock_module:
+  30               	  /* set system clock to 16.777 MHz */
+  31 0016 33FC 7C0C 	  move.w #0x7c0c,SYNCR
+  31      00FF FA04 
+  32               	
+  33               	setup_cs_pins:
+  34               	  /* CSBOOT, CS0-CS5 to 16 bit */
+  35 001e 33FC 3CFF 	  move.w #0x3cff,CSPAR0
+  35      00FF FA44 
+  36               	  /* CS10, CS9, CS8 --> 8 Bit, CS6 --> ADDR19 */
+  37 0026 33FC 03FD 	  move.w #0x03fd,CSPAR1
+  37      00FF FA46 
+  38               	
+  39               	setup_cs_ram:
+  40               	  /* CS0 to RAM, 512k */
+  41 002e 33FC 2006 	  move.w #0x2006,CSBAR0
+  41      00FF FA4C 
+  42 0036 33FC 5830 	  move.w #0x5830,CSOR0
+  42      00FF FA4E 
+  43               	
+  44               	  /* CS1 to to RAM, 512k */
+  45 003e 33FC 2006 	  move.w #0x2006,CSBAR1
+  45      00FF FA50 
+  46 0046 33FC 3830 	  move.w #0x3830,CSOR1
+  46      00FF FA52 
+  47               	
+  48               	  /* CS2 to RTC */
+  49 004e 33FC 4F00 	  move.w #0x4f00,CSBAR2
+  49      00FF FA54 
+  50 0056 33FC 7D70 	  move.w #0x7d70,CSOR2
+  50      00FF FA56 
+  51               	
+  52               	  /* CS3 to 0x200000 with 64k odd byte */
+  53 005e 33FC 8000 	  move.w #0x8000,CSBAR3
+  53      00FF FA58 
+  54 0066 33FC 7830 	  move.w #0x7830,CSOR3
+  54      00FF FA5A 
+  55               	
+  56               	    /* CS4 to 0x200000 with 64k odd byte */
+  57 006e 33FC 8000 	  move.w #0x8000,CSBAR4
+  57      00FF FA5C 
+  58 0076 33FC 7830 	  move.w #0x7830,CSOR4
+  58      00FF FA5E 
+  59               	
+  60               	    /* CS5 to 0x200000 with 64k odd byte */
+  61 007e 33FC 2006 	  move.w #0x2006,CSBAR5
+  61      00FF FA60 
+  62 0086 33FC 7830 	  move.w #0x7830,CSOR5
+  62      00FF FA62 
+  63               	  
+  64               	    /* CS6 to 0x200000 with 64k odd byte */
+  65 008e 33FC 8000 	  move.w #0x8000,CSBAR6
+  65      00FF FA64 
+  66 0096 33FC 7830 	  move.w #0x7830,CSOR6
+  66      00FF FA66 
+  67               	  
+  68               	    /* CS7 to 0x200000 with 64k odd byte */
+  69 009e 33FC 3007 	  move.w #0x3007,CSBAR7
+  69      00FF FA68 
+  70 00a6 33FC 78B0 	  move.w #0x78b0,CSOR7
+  70      00FF FA6A 
+  71               	  
+  72               	    /* CS8 to 0x200000 with 64k odd byte */
+  73 00ae 33FC 4005 	  move.w #0x4005,CSBAR8
+  73      00FF FA6C 
+  74 00b6 33FC 7C30 	  move.w #0x7c30,CSOR8
+  74      00FF FA6E 
+  75               	  
+  76               	    /* CS9  - D/A converter */
+  77 00be 33FC 4F10 	  move.w #0x4f10,CSBAR9
+  77      00FF FA70 
+  78 00c6 33FC 7430 	  move.w #0x7430,CSOR9
+  78      00FF FA72 
+  79               	  
+  80               	    /* CS10 to 0x4f_2000 with watchdog */
+  81 00ce 33FC 4F20 	  move.w #0x4f20,CSBAR10
+  81      00FF FA74 
+  82 00d6 33FC 6970 	  move.w #0x6970,CSOR10
+  82      00FF FA76 
+  83               	
+  84               	  /* prepare stack and frame pointer. */
+  85 00de 2E7C 0000 	  move.l  #__stack, sp
+  85      0000 
+  86 00e4 4E56 FFF8 	  link    a6, #-8
+  87               	
+  88               	  /*move.w #0x0,0x4f2000*/
+  89               	
+  90               	  /* copy vectors to ram */
+  91 00e8 4EB9 0000 	  jsr SYM(copy_vec)
+  91      0000 
+  92               	
+  93               	  /* copy data to ram */
+  94 00ee 4EB9 0000 	  jsr SYM(copy_data)
+  94      0000 
+  95               	
+  96               	  /* clear bss */
+  97 00f4 4EB9 0000 	  jsr SYM(clear_bss)
+  97      0000 
+  98               	
+  99               	  /* initialize hardware. */
+ 100 00fa 4EB9 0000 	  jsr     SYM(init_main)
+ 100      0000 
+ 101               	
+ 102               	  /* enable interrupts. */
+ 103 0100 46FC 2000 	  move.w  #0x2000, sr
+ 104               	
+ 105               	  /* call main(int argc, char *argv[] */
+ 106 0104 2F3C 0000 	  move.l  #0, -(sp)
+ 106      0000 
+ 107 010a 2F3C 0000 	  move.l  #0, -(sp)
+ 107      0000 
+ 108 0110 2F3C 0000 	  move.l  #0, -(sp)
+ 108      0000 
+ 109 0116 4EB9 0000 	  jsr     SYM(main)
+ 109      0000 
+ 110 011c 4FEF 000C 	  lea     (sp, 12), sp
+ 111               	
+ 112               	  /* stop on exit from main. */
+ 113               	__exit:
+ 114 0120 6000 FFFE 	  bra __exit
+DEFINED SYMBOLS
+         mc68332.inc:14     *ABS*:0000000000fffa00 SIMCR
+         mc68332.inc:15     *ABS*:0000000000fffa02 SIMTR
+         mc68332.inc:16     *ABS*:0000000000fffa04 SYNCR
+         mc68332.inc:17     *ABS*:0000000000fffa07 RSR
+         mc68332.inc:18     *ABS*:0000000000fffa08 SIMTRE
+         mc68332.inc:19     *ABS*:0000000000fffa11 PORTE0
+         mc68332.inc:20     *ABS*:0000000000fffa13 PORTE1
+         mc68332.inc:21     *ABS*:0000000000fffa15 DDRE
+         mc68332.inc:22     *ABS*:0000000000fffa17 PEPAR
+         mc68332.inc:23     *ABS*:0000000000fffa19 PORTF0
+         mc68332.inc:24     *ABS*:0000000000fffa1b PORTF1
+         mc68332.inc:25     *ABS*:0000000000fffa1d DDRF
+         mc68332.inc:26     *ABS*:0000000000fffa1f PFPAR
+         mc68332.inc:27     *ABS*:0000000000fffa21 SYPCR
+         mc68332.inc:28     *ABS*:0000000000fffa22 PICR
+         mc68332.inc:29     *ABS*:0000000000fffa24 PITR
+         mc68332.inc:30     *ABS*:0000000000fffa27 SWSR
+         mc68332.inc:31     *ABS*:0000000000fffa30 TSTMSRA
+         mc68332.inc:32     *ABS*:0000000000fffa32 TSTMSRB
+         mc68332.inc:33     *ABS*:0000000000fffa34 TSTSC
+         mc68332.inc:34     *ABS*:0000000000fffa36 TSTRC
+         mc68332.inc:35     *ABS*:0000000000fffa38 CREG
+         mc68332.inc:36     *ABS*:0000000000fffa3a DREG
+         mc68332.inc:37     *ABS*:0000000000fffa41 PORTC
+         mc68332.inc:38     *ABS*:0000000000fffa44 CSPAR0
+         mc68332.inc:39     *ABS*:0000000000fffa46 CSPAR1
+         mc68332.inc:40     *ABS*:0000000000fffa48 CSBARBT
+         mc68332.inc:41     *ABS*:0000000000fffa4a CSORBT
+         mc68332.inc:42     *ABS*:0000000000fffa4c CSBAR0
+         mc68332.inc:43     *ABS*:0000000000fffa4e CSOR0
+         mc68332.inc:44     *ABS*:0000000000fffa50 CSBAR1
+         mc68332.inc:45     *ABS*:0000000000fffa52 CSOR1
+         mc68332.inc:46     *ABS*:0000000000fffa54 CSBAR2
+         mc68332.inc:47     *ABS*:0000000000fffa56 CSOR2
+         mc68332.inc:48     *ABS*:0000000000fffa58 CSBAR3
+         mc68332.inc:49     *ABS*:0000000000fffa5a CSOR3
+         mc68332.inc:50     *ABS*:0000000000fffa5c CSBAR4
+         mc68332.inc:51     *ABS*:0000000000fffa5e CSOR4
+         mc68332.inc:52     *ABS*:0000000000fffa60 CSBAR5
+         mc68332.inc:53     *ABS*:0000000000fffa62 CSOR5
+         mc68332.inc:54     *ABS*:0000000000fffa64 CSBAR6
+         mc68332.inc:55     *ABS*:0000000000fffa66 CSOR6
+         mc68332.inc:56     *ABS*:0000000000fffa68 CSBAR7
+         mc68332.inc:57     *ABS*:0000000000fffa6a CSOR7
+         mc68332.inc:58     *ABS*:0000000000fffa6c CSBAR8
+         mc68332.inc:59     *ABS*:0000000000fffa6e CSOR8
+         mc68332.inc:60     *ABS*:0000000000fffa70 CSBAR9
+         mc68332.inc:61     *ABS*:0000000000fffa72 CSOR9
+         mc68332.inc:62     *ABS*:0000000000fffa74 CSBAR10
+         mc68332.inc:63     *ABS*:0000000000fffa76 CSOR10
+         mc68332.inc:68     *ABS*:0000000000fffb00 TRAMMCR
+         mc68332.inc:69     *ABS*:0000000000fffb02 TRAMTST
+         mc68332.inc:70     *ABS*:0000000000fffb04 TRAMBAR
+         mc68332.inc:74     *ABS*:0000000000fffc00 QSMMCR
+         mc68332.inc:75     *ABS*:0000000000fffc02 QTEST
+         mc68332.inc:76     *ABS*:0000000000fffc04 QUILR
+         mc68332.inc:77     *ABS*:0000000000fffc05 QIVR
+         mc68332.inc:78     *ABS*:0000000000fffc08 SCCR0
+         mc68332.inc:79     *ABS*:0000000000fffc0a SCCR1
+         mc68332.inc:80     *ABS*:0000000000fffc0c SCSR
+         mc68332.inc:81     *ABS*:0000000000fffc0e SCDR
+         mc68332.inc:82     *ABS*:0000000000fffc15 PORTQS
+         mc68332.inc:83     *ABS*:0000000000fffc16 PQSPAR
+         mc68332.inc:84     *ABS*:0000000000fffc17 DDRQS
+         mc68332.inc:85     *ABS*:0000000000fffc18 SPCR0
+         mc68332.inc:86     *ABS*:0000000000fffc1a SPCR1
+         mc68332.inc:87     *ABS*:0000000000fffc1c SPCR2
+         mc68332.inc:88     *ABS*:0000000000fffc1e SPCR3
+         mc68332.inc:89     *ABS*:0000000000fffc1f SPSR
+         mc68332.inc:90     *ABS*:0000000000fffd00 RR0
+         mc68332.inc:91     *ABS*:0000000000fffd02 RR1
+         mc68332.inc:92     *ABS*:0000000000fffd04 RR2
+         mc68332.inc:93     *ABS*:0000000000fffd06 RR3
+         mc68332.inc:94     *ABS*:0000000000fffd08 RR4
+         mc68332.inc:95     *ABS*:0000000000fffd0a RR5
+         mc68332.inc:96     *ABS*:0000000000fffd0c RR6
+         mc68332.inc:97     *ABS*:0000000000fffd0e RR7
+         mc68332.inc:98     *ABS*:0000000000fffd00 RR8
+         mc68332.inc:99     *ABS*:0000000000fffd02 RR9
+         mc68332.inc:100    *ABS*:0000000000fffd04 RRA
+         mc68332.inc:101    *ABS*:0000000000fffd06 RRB
+         mc68332.inc:102    *ABS*:0000000000fffd08 RRC
+         mc68332.inc:103    *ABS*:0000000000fffd0a RRD
+         mc68332.inc:104    *ABS*:0000000000fffd0c RRE
+         mc68332.inc:105    *ABS*:0000000000fffd0e RRF
+         mc68332.inc:106    *ABS*:0000000000fffd20 TR0
+         mc68332.inc:107    *ABS*:0000000000fffd22 TR1
+         mc68332.inc:108    *ABS*:0000000000fffd24 TR2
+         mc68332.inc:109    *ABS*:0000000000fffd26 TR3
+         mc68332.inc:110    *ABS*:0000000000fffd28 TR4
+         mc68332.inc:111    *ABS*:0000000000fffd2a TR5
+         mc68332.inc:112    *ABS*:0000000000fffd2c TR6
+         mc68332.inc:113    *ABS*:0000000000fffd2e TR7
+         mc68332.inc:114    *ABS*:0000000000fffd30 TR8
+         mc68332.inc:115    *ABS*:0000000000fffd32 TR9
+         mc68332.inc:116    *ABS*:0000000000fffd34 TRA
+         mc68332.inc:117    *ABS*:0000000000fffd36 TRB
+         mc68332.inc:118    *ABS*:0000000000fffd38 TRC
+         mc68332.inc:119    *ABS*:0000000000fffd3a TRD
+         mc68332.inc:120    *ABS*:0000000000fffd3c TRE
+         mc68332.inc:121    *ABS*:0000000000fffd3e TRF
+         mc68332.inc:122    *ABS*:0000000000fffd40 CR0
+         mc68332.inc:123    *ABS*:0000000000fffd41 CR1
+         mc68332.inc:124    *ABS*:0000000000fffd42 CR2
+         mc68332.inc:125    *ABS*:0000000000fffd43 CR3
+         mc68332.inc:126    *ABS*:0000000000fffd44 CR4
+         mc68332.inc:127    *ABS*:0000000000fffd45 CR5
+         mc68332.inc:128    *ABS*:0000000000fffd46 CR6
+         mc68332.inc:129    *ABS*:0000000000fffd47 CR7
+         mc68332.inc:130    *ABS*:0000000000fffd48 CR8
+         mc68332.inc:131    *ABS*:0000000000fffd49 CR9
+         mc68332.inc:132    *ABS*:0000000000fffd4a CRA
+         mc68332.inc:133    *ABS*:0000000000fffd4b CRB
+         mc68332.inc:134    *ABS*:0000000000fffd4c CRC
+         mc68332.inc:135    *ABS*:0000000000fffd4d CRD
+         mc68332.inc:136    *ABS*:0000000000fffd4e CRE
+         mc68332.inc:137    *ABS*:0000000000fffd4f CRF
+         mc68332.inc:141    *ABS*:0000000000fffe00 TPUMCR
+         mc68332.inc:142    *ABS*:0000000000fffe02 TCR
+         mc68332.inc:143    *ABS*:0000000000fffe04 DSCR
+         mc68332.inc:144    *ABS*:0000000000fffe06 DSSR
+         mc68332.inc:145    *ABS*:0000000000fffe08 TICR
+         mc68332.inc:146    *ABS*:0000000000fffe0a CIER
+         mc68332.inc:147    *ABS*:0000000000fffe0c CFSR0
+         mc68332.inc:148    *ABS*:0000000000fffe0e CFSR1
+         mc68332.inc:149    *ABS*:0000000000fffe10 CFSR2
+         mc68332.inc:150    *ABS*:0000000000fffe12 CFSR3
+         mc68332.inc:151    *ABS*:0000000000fffe14 HSQR0
+         mc68332.inc:152    *ABS*:0000000000fffe16 HSQR1
+         mc68332.inc:153    *ABS*:0000000000fffe18 HSRR0
+         mc68332.inc:154    *ABS*:0000000000fffe1a HSRR1
+         mc68332.inc:155    *ABS*:0000000000fffe1c CPR0
+         mc68332.inc:156    *ABS*:0000000000fffe1e CPR1
+         mc68332.inc:157    *ABS*:0000000000fffe20 CISR
+         mc68332.inc:158    *ABS*:0000000000fffe22 LR
+         mc68332.inc:159    *ABS*:0000000000ffff24 SGLR
+         mc68332.inc:160    *ABS*:0000000000ffff26 DCNR
+         mc68332.inc:162    *ABS*:0000000000ffff00 PRAM
+              crt0.S:15     .text:0000000000000000 __start
+              crt0.S:20     .text:0000000000000006 setup_system_module
+              crt0.S:25     .text:000000000000000e setup_system_protection
+              crt0.S:29     .text:0000000000000016 setup_clock_module
+              crt0.S:33     .text:000000000000001e setup_cs_pins
+              crt0.S:39     .text:000000000000002e setup_cs_ram
+              crt0.S:113    .text:0000000000000120 __exit
+
+UNDEFINED SYMBOLS
+__stack
+copy_vec
+copy_data
+clear_bss
+init_main
+main

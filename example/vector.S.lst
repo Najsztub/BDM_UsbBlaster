@@ -1,0 +1,288 @@
+   1               	# 1 "vector.S"
+   1               	#include "asm.h"
+   0               	
+   0               	
+   1               	/*
+   2               	
+   3               	  .extern __stack
+   4               	  .extern start
+   5               	  ; .extern SYM(cVecDefault)
+   6               	  ; .extern SYM(cIRQDefault)
+   7               	  ; .extern SYM(cIRQSpurious)
+   8               	  ; .extern SYM(cTrapDefault)
+   9               	
+  10               	  .align 4
+  11               	  .section  .vector
+  12               	SYM(__vec_start):
+  13 0000 0000 0000 	  .long   __stack               | 0x000 Reset: Initial Stack Pointer
+  14 0004 0000 0000 	  .long   __start               | 0x004 Reset: Initial Program Counter
+  15 0008 0000 0000 	  .long   VecDefault            | 0x008 Bus Error
+  16 000c 0000 0000 	  .long   VecDefault            | 0x00C Address Error
+  17 0010 0000 0000 	  .long   VecDefault            | 0x010 Illegal Instruction
+  18 0014 0000 0000 	  .long   VecDefault            | 0x014 Zero Divison
+  19 0018 0000 0000 	  .long   VecDefault            | 0x018 CHK Instruction
+  20 001c 0000 0000 	  .long   VecDefault            | 0x01C TRAP Instruction
+  21 0020 0000 0000 	  .long   VecDefault            | 0x020 Privilege Violation
+  22 0024 0000 0000 	  .long   VecDefault            | 0x024 Trace
+  23 0028 0000 0000 	  .long   VecDefault            | 0x028 Unimplemented line-a opcode
+  24 002c 0000 0000 	  .long   VecDefault            | 0x02C Unimplemented line-b opcode
+  25 0030 0000 0000 	  .long   VecDefault            | 0x030 Hardware Breakpoint
+  26 0034 0000 0000 	  .long   VecDefault            | 0x034 reserved
+  27 0038 0000 0000 	  .long   VecDefault            | 0x038 Format Error
+  28 003c 0000 0000 	  .long   VecDefault            | 0x03C Uninitialized Interrupt
+  29 0040 0000 0000 	  .org    0x6C                   | 0x040 - 0x05C reserved
+  29      0000 0000 
+  29      0000 0000 
+  29      0000 0000 
+  29      0000 0000 
+  30 006c 0000 0000 	  .long   IRQSpurious           | 0x060 Spurious Interrupt
+  31 0070 0000 0000 	  .long   IRQDefault            | 0x064 Level 1 Interrupt
+  32 0074 0000 0000 	  .long   IRQDefault            | 0x068 Level 2 Interrupt
+  33 0078 0000 0000 	  .long   IRQDefault            | 0x06C Level 3 Interrupt
+  34 007c 0000 0000 	  .long   IRQDefault            | 0x070 Level 4 Interrupt
+  35 0080 0000 0000 	  .long   IRQDefault            | 0x074 Level 5 Interrupt
+  36 0084 0000 0000 	  .long   IRQDefault            | 0x078 Level 6 Interrupt
+  37 0088 0000 0000 	  .long   IRQDefault            | 0x07C Level 7 Interrupt
+  38 008c 0000 0000 	  .long   TrapDefault           | 0x080 TRAP 0
+  39 0090 0000 0000 	  .long   TrapDefault           | 0x084 TRAP 1
+  40 0094 0000 0000 	  .long   TrapDefault           | 0x088 TRAP 2
+  41 0098 0000 0000 	  .long   TrapDefault           | 0x08C TRAP 3
+  42 009c 0000 0000 	  .long   TrapDefault           | 0x090 TRAP 4
+  43 00a0 0000 0000 	  .long   TrapDefault           | 0x094 TRAP 5
+  44 00a4 0000 0000 	  .long   TrapDefault           | 0x098 TRAP 6
+  45 00a8 0000 0000 	  .long   TrapDefault           | 0x09C TRAP 7
+  46 00ac 0000 0000 	  .long   TrapDefault           | 0x0A0 TRAP 8
+  47 00b0 0000 0000 	  .long   TrapDefault           | 0x0A4 TRAP 9
+  48 00b4 0000 0000 	  .long   TrapDefault           | 0x0A8 TRAP 10
+  49 00b8 0000 0000 	  .long   TrapDefault           | 0x0AC TRAP 11
+  50 00bc 0000 0000 	  .long   TrapDefault           | 0x0B0 TRAP 12
+  51 00c0 0000 0000 	  .long   TrapDefault           | 0x0B4 TRAP 13
+  52 00c4 0000 0000 	  .long   TrapDefault           | 0x0B8 TRAP 14
+  53 00c8 0000 0000 	  .long   TrapDefault           | 0x0BC TRAP 15
+  54 00cc 0000 0000 	  .org    0x100                  | 0x0C0 - 0x0FC reserved
+  54      0000 0000 
+  54      0000 0000 
+  54      0000 0000 
+  54      0000 0000 
+  55 0100 0000 0000 	  .long   IRQDefault            | 0x100 User-Defined Interrupt 0
+  56 0104 0000 0000 	  .long   IRQDefault            | 0x104 User-Defined Interrupt 1
+  57 0108 0000 0000 	  .long   IRQDefault            | 0x108 User-Defined Interrupt 2
+  58 010c 0000 0000 	  .long   IRQDefault            | 0x10C User-Defined Interrupt 3
+  59 0110 0000 0000 	  .long   IRQDefault            | 0x110 User-Defined Interrupt 4
+  60 0114 0000 0000 	  .long   IRQDefault            | 0x114 User-Defined Interrupt 5
+  61 0118 0000 0000 	  .long   IRQDefault            | 0x118 User-Defined Interrupt 6
+  62 011c 0000 0000 	  .long   IRQDefault            | 0x11C User-Defined Interrupt 7
+  63 0120 0000 0000 	  .long   IRQDefault            | 0x120 User-Defined Interrupt 8
+  64 0124 0000 0000 	  .long   IRQDefault            | 0x124 User-Defined Interrupt 9
+  65 0128 0000 0000 	  .long   IRQDefault            | 0x128 User-Defined Interrupt 10
+  66 012c 0000 0000 	  .long   IRQDefault            | 0x12C User-Defined Interrupt 11
+  67 0130 0000 0000 	  .long   IRQDefault            | 0x130 User-Defined Interrupt 12
+  68 0134 0000 0000 	  .long   IRQDefault            | 0x134 User-Defined Interrupt 13
+  69 0138 0000 0000 	  .long   IRQDefault            | 0x138 User-Defined Interrupt 14
+  70 013c 0000 0000 	  .long   IRQDefault            | 0x13C User-Defined Interrupt 15
+  71 0140 0000 0000 	  .long   IRQDefault            | 0x140 User-Defined Interrupt 16
+  72 0144 0000 0000 	  .long   IRQDefault            | 0x144 User-Defined Interrupt 17
+  73 0148 0000 0000 	  .long   IRQDefault            | 0x148 User-Defined Interrupt 18
+  74 014c 0000 0000 	  .long   IRQDefault            | 0x14C User-Defined Interrupt 19
+  75 0150 0000 0000 	  .long   IRQDefault            | 0x150 User-Defined Interrupt 20
+  76 0154 0000 0000 	  .long   IRQDefault            | 0x154 User-Defined Interrupt 21
+  77 0158 0000 0000 	  .long   IRQDefault            | 0x158 User-Defined Interrupt 22
+  78 015c 0000 0000 	  .long   IRQDefault            | 0x15C User-Defined Interrupt 23
+  79 0160 0000 0000 	  .long   IRQDefault            | 0x160 User-Defined Interrupt 24
+  80 0164 0000 0000 	  .long   IRQDefault            | 0x164 User-Defined Interrupt 25
+  81 0168 0000 0000 	  .long   IRQDefault            | 0x168 User-Defined Interrupt 26
+  82 016c 0000 0000 	  .long   IRQDefault            | 0x16C User-Defined Interrupt 27
+  83 0170 0000 0000 	  .long   IRQDefault            | 0x170 User-Defined Interrupt 28
+  84 0174 0000 0000 	  .long   IRQDefault            | 0x174 User-Defined Interrupt 29
+  85 0178 0000 0000 	  .long   IRQDefault            | 0x178 User-Defined Interrupt 30
+  86 017c 0000 0000 	  .long   IRQDefault            | 0x17C User-Defined Interrupt 31
+  87 0180 0000 0000 	  .long   IRQDefault            | 0x180 User-Defined Interrupt 32
+  88 0184 0000 0000 	  .long   IRQDefault            | 0x184 User-Defined Interrupt 33
+  89 0188 0000 0000 	  .long   IRQDefault            | 0x188 User-Defined Interrupt 34
+  90 018c 0000 0000 	  .long   IRQDefault            | 0x18C User-Defined Interrupt 35
+  91 0190 0000 0000 	  .long   IRQDefault            | 0x190 User-Defined Interrupt 36
+  92 0194 0000 0000 	  .long   IRQDefault            | 0x194 User-Defined Interrupt 37
+  93 0198 0000 0000 	  .long   IRQDefault            | 0x198 User-Defined Interrupt 38
+  94 019c 0000 0000 	  .long   IRQDefault            | 0x19C User-Defined Interrupt 39
+  95 01a0 0000 0000 	  .long   IRQDefault            | 0x1A0 User-Defined Interrupt 40
+  96 01a4 0000 0000 	  .long   IRQDefault            | 0x1A4 User-Defined Interrupt 41
+  97 01a8 0000 0000 	  .long   IRQDefault            | 0x1A8 User-Defined Interrupt 42
+  98 01ac 0000 0000 	  .long   IRQDefault            | 0x1AC User-Defined Interrupt 43
+  99 01b0 0000 0000 	  .long   IRQDefault            | 0x1B0 User-Defined Interrupt 44
+ 100 01b4 0000 0000 	  .long   IRQDefault            | 0x1B4 User-Defined Interrupt 45
+ 101 01b8 0000 0000 	  .long   IRQDefault            | 0x1B8 User-Defined Interrupt 46
+ 102 01bc 0000 0000 	  .long   IRQDefault            | 0x1BC User-Defined Interrupt 47
+ 103 01c0 0000 0000 	  .long   IRQDefault            | 0x1C0 User-Defined Interrupt 48
+ 104 01c4 0000 0000 	  .long   IRQDefault            | 0x1C4 User-Defined Interrupt 49
+ 105 01c8 0000 0000 	  .long   IRQDefault            | 0x1C8 User-Defined Interrupt 50
+ 106 01cc 0000 0000 	  .long   IRQDefault            | 0x1CC User-Defined Interrupt 51
+ 107 01d0 0000 0000 	  .long   IRQDefault            | 0x1D0 User-Defined Interrupt 52
+ 108 01d4 0000 0000 	  .long   IRQDefault            | 0x1D4 User-Defined Interrupt 53
+ 109 01d8 0000 0000 	  .long   IRQDefault            | 0x1D8 User-Defined Interrupt 54
+ 110 01dc 0000 0000 	  .long   IRQDefault            | 0x1DC User-Defined Interrupt 55
+ 111 01e0 0000 0000 	  .long   IRQDefault            | 0x1E0 User-Defined Interrupt 56
+ 112 01e4 0000 0000 	  .long   IRQDefault            | 0x1E4 User-Defined Interrupt 57
+ 113 01e8 0000 0000 	  .long   IRQDefault            | 0x1E8 User-Defined Interrupt 58
+ 114 01ec 0000 0000 	  .long   IRQDefault            | 0x1EC User-Defined Interrupt 59
+ 115 01f0 0000 0000 	  .long   IRQDefault            | 0x1F0 User-Defined Interrupt 60
+ 116 01f4 0000 0000 	  .long   IRQDefault            | 0x1F4 User-Defined Interrupt 61
+ 117 01f8 0000 0000 	  .long   IRQDefault            | 0x1F8 User-Defined Interrupt 62
+ 118 01fc 0000 0000 	  .long   IRQDefault            | 0x1FC User-Defined Interrupt 63
+ 119 0200 0000 0000 	  .long   IRQDefault            | 0x200 User-Defined Interrupt 64
+ 120 0204 0000 0000 	  .long   IRQDefault            | 0x204 User-Defined Interrupt 65
+ 121 0208 0000 0000 	  .long   IRQDefault            | 0x208 User-Defined Interrupt 66
+ 122 020c 0000 0000 	  .long   IRQDefault            | 0x20C User-Defined Interrupt 67
+ 123 0210 0000 0000 	  .long   IRQDefault            | 0x210 User-Defined Interrupt 68
+ 124 0214 0000 0000 	  .long   IRQDefault            | 0x214 User-Defined Interrupt 69
+ 125 0218 0000 0000 	  .long   IRQDefault            | 0x218 User-Defined Interrupt 70
+ 126 021c 0000 0000 	  .long   IRQDefault            | 0x21C User-Defined Interrupt 71
+ 127 0220 0000 0000 	  .long   IRQDefault            | 0x220 User-Defined Interrupt 72
+ 128 0224 0000 0000 	  .long   IRQDefault            | 0x224 User-Defined Interrupt 73
+ 129 0228 0000 0000 	  .long   IRQDefault            | 0x228 User-Defined Interrupt 74
+ 130 022c 0000 0000 	  .long   IRQDefault            | 0x22C User-Defined Interrupt 75
+ 131 0230 0000 0000 	  .long   IRQDefault            | 0x230 User-Defined Interrupt 76
+ 132 0234 0000 0000 	  .long   IRQDefault            | 0x234 User-Defined Interrupt 77
+ 133 0238 0000 0000 	  .long   IRQDefault            | 0x238 User-Defined Interrupt 78
+ 134 023c 0000 0000 	  .long   IRQDefault            | 0x23C User-Defined Interrupt 79
+ 135 0240 0000 0000 	  .long   IRQDefault            | 0x240 User-Defined Interrupt 80
+ 136 0244 0000 0000 	  .long   IRQDefault            | 0x244 User-Defined Interrupt 81
+ 137 0248 0000 0000 	  .long   IRQDefault            | 0x248 User-Defined Interrupt 82
+ 138 024c 0000 0000 	  .long   IRQDefault            | 0x24C User-Defined Interrupt 83
+ 139 0250 0000 0000 	  .long   IRQDefault            | 0x250 User-Defined Interrupt 84
+ 140 0254 0000 0000 	  .long   IRQDefault            | 0x254 User-Defined Interrupt 85
+ 141 0258 0000 0000 	  .long   IRQDefault            | 0x258 User-Defined Interrupt 86
+ 142 025c 0000 0000 	  .long   IRQDefault            | 0x25C User-Defined Interrupt 87
+ 143 0260 0000 0000 	  .long   IRQDefault            | 0x260 User-Defined Interrupt 88
+ 144 0264 0000 0000 	  .long   IRQDefault            | 0x264 User-Defined Interrupt 89
+ 145 0268 0000 0000 	  .long   IRQDefault            | 0x268 User-Defined Interrupt 90
+ 146 026c 0000 0000 	  .long   IRQDefault            | 0x26C User-Defined Interrupt 91
+ 147 0270 0000 0000 	  .long   IRQDefault            | 0x270 User-Defined Interrupt 92
+ 148 0274 0000 0000 	  .long   IRQDefault            | 0x274 User-Defined Interrupt 93
+ 149 0278 0000 0000 	  .long   IRQDefault            | 0x278 User-Defined Interrupt 94
+ 150 027c 0000 0000 	  .long   IRQDefault            | 0x27C User-Defined Interrupt 95
+ 151 0280 0000 0000 	  .long   IRQDefault            | 0x280 User-Defined Interrupt 96
+ 152 0284 0000 0000 	  .long   IRQDefault            | 0x284 User-Defined Interrupt 97
+ 153 0288 0000 0000 	  .long   IRQDefault            | 0x288 User-Defined Interrupt 98
+ 154 028c 0000 0000 	  .long   IRQDefault            | 0x28C User-Defined Interrupt 99
+ 155 0290 0000 0000 	  .long   IRQDefault            | 0x290 User-Defined Interrupt 100
+ 156 0294 0000 0000 	  .long   IRQDefault            | 0x294 User-Defined Interrupt 101
+ 157 0298 0000 0000 	  .long   IRQDefault            | 0x298 User-Defined Interrupt 102
+ 158 029c 0000 0000 	  .long   IRQDefault            | 0x29C User-Defined Interrupt 103
+ 159 02a0 0000 0000 	  .long   IRQDefault            | 0x2A0 User-Defined Interrupt 104
+ 160 02a4 0000 0000 	  .long   IRQDefault            | 0x2A4 User-Defined Interrupt 105
+ 161 02a8 0000 0000 	  .long   IRQDefault            | 0x2A8 User-Defined Interrupt 106
+ 162 02ac 0000 0000 	  .long   IRQDefault            | 0x2AC User-Defined Interrupt 107
+ 163 02b0 0000 0000 	  .long   IRQDefault            | 0x2B0 User-Defined Interrupt 108
+ 164 02b4 0000 0000 	  .long   IRQDefault            | 0x2B4 User-Defined Interrupt 109
+ 165 02b8 0000 0000 	  .long   IRQDefault            | 0x2B8 User-Defined Interrupt 110
+ 166 02bc 0000 0000 	  .long   IRQDefault            | 0x2BC User-Defined Interrupt 111
+ 167 02c0 0000 0000 	  .long   IRQDefault            | 0x2C0 User-Defined Interrupt 112
+ 168 02c4 0000 0000 	  .long   IRQDefault            | 0x2C4 User-Defined Interrupt 113
+ 169 02c8 0000 0000 	  .long   IRQDefault            | 0x2C8 User-Defined Interrupt 114
+ 170 02cc 0000 0000 	  .long   IRQDefault            | 0x2CC User-Defined Interrupt 115
+ 171 02d0 0000 0000 	  .long   IRQDefault            | 0x2D0 User-Defined Interrupt 116
+ 172 02d4 0000 0000 	  .long   IRQDefault            | 0x2D4 User-Defined Interrupt 117
+ 173 02d8 0000 0000 	  .long   IRQDefault            | 0x2D8 User-Defined Interrupt 118
+ 174 02dc 0000 0000 	  .long   IRQDefault            | 0x2DC User-Defined Interrupt 119
+ 175 02e0 0000 0000 	  .long   IRQDefault            | 0x2E0 User-Defined Interrupt 120
+ 176 02e4 0000 0000 	  .long   IRQDefault            | 0x2E4 User-Defined Interrupt 121
+ 177 02e8 0000 0000 	  .long   IRQDefault            | 0x2E8 User-Defined Interrupt 122
+ 178 02ec 0000 0000 	  .long   IRQDefault            | 0x2EC User-Defined Interrupt 123
+ 179 02f0 0000 0000 	  .long   IRQDefault            | 0x2F0 User-Defined Interrupt 124
+ 180 02f4 0000 0000 	  .long   IRQDefault            | 0x2F4 User-Defined Interrupt 125
+ 181 02f8 0000 0000 	  .long   IRQDefault            | 0x2F8 User-Defined Interrupt 126
+ 182 02fc 0000 0000 	  .long   IRQDefault            | 0x2FC User-Defined Interrupt 127
+ 183 0300 0000 0000 	  .long   IRQDefault            | 0x300 User-Defined Interrupt 128
+ 184 0304 0000 0000 	  .long   IRQDefault            | 0x304 User-Defined Interrupt 129
+ 185 0308 0000 0000 	  .long   IRQDefault            | 0x308 User-Defined Interrupt 130
+ 186 030c 0000 0000 	  .long   IRQDefault            | 0x30C User-Defined Interrupt 131
+ 187 0310 0000 0000 	  .long   IRQDefault            | 0x310 User-Defined Interrupt 132
+ 188 0314 0000 0000 	  .long   IRQDefault            | 0x314 User-Defined Interrupt 133
+ 189 0318 0000 0000 	  .long   IRQDefault            | 0x318 User-Defined Interrupt 134
+ 190 031c 0000 0000 	  .long   IRQDefault            | 0x31C User-Defined Interrupt 135
+ 191 0320 0000 0000 	  .long   IRQDefault            | 0x320 User-Defined Interrupt 136
+ 192 0324 0000 0000 	  .long   IRQDefault            | 0x324 User-Defined Interrupt 137
+ 193 0328 0000 0000 	  .long   IRQDefault            | 0x328 User-Defined Interrupt 138
+ 194 032c 0000 0000 	  .long   IRQDefault            | 0x32C User-Defined Interrupt 139
+ 195 0330 0000 0000 	  .long   IRQDefault            | 0x330 User-Defined Interrupt 140
+ 196 0334 0000 0000 	  .long   IRQDefault            | 0x334 User-Defined Interrupt 141
+ 197 0338 0000 0000 	  .long   IRQDefault            | 0x338 User-Defined Interrupt 142
+ 198 033c 0000 0000 	  .long   IRQDefault            | 0x33C User-Defined Interrupt 143
+ 199 0340 0000 0000 	  .long   IRQDefault            | 0x340 User-Defined Interrupt 144
+ 200 0344 0000 0000 	  .long   IRQDefault            | 0x344 User-Defined Interrupt 145
+ 201 0348 0000 0000 	  .long   IRQDefault            | 0x348 User-Defined Interrupt 146
+ 202 034c 0000 0000 	  .long   IRQDefault            | 0x34C User-Defined Interrupt 147
+ 203 0350 0000 0000 	  .long   IRQDefault            | 0x350 User-Defined Interrupt 148
+ 204 0354 0000 0000 	  .long   IRQDefault            | 0x354 User-Defined Interrupt 149
+ 205 0358 0000 0000 	  .long   IRQDefault            | 0x358 User-Defined Interrupt 150
+ 206 035c 0000 0000 	  .long   IRQDefault            | 0x35C User-Defined Interrupt 151
+ 207 0360 0000 0000 	  .long   IRQDefault            | 0x360 User-Defined Interrupt 152
+ 208 0364 0000 0000 	  .long   IRQDefault            | 0x364 User-Defined Interrupt 153
+ 209 0368 0000 0000 	  .long   IRQDefault            | 0x368 User-Defined Interrupt 154
+ 210 036c 0000 0000 	  .long   IRQDefault            | 0x36C User-Defined Interrupt 155
+ 211 0370 0000 0000 	  .long   IRQDefault            | 0x370 User-Defined Interrupt 156
+ 212 0374 0000 0000 	  .long   IRQDefault            | 0x374 User-Defined Interrupt 157
+ 213 0378 0000 0000 	  .long   IRQDefault            | 0x378 User-Defined Interrupt 158
+ 214 037c 0000 0000 	  .long   IRQDefault            | 0x37C User-Defined Interrupt 159
+ 215 0380 0000 0000 	  .long   IRQDefault            | 0x380 User-Defined Interrupt 160
+ 216 0384 0000 0000 	  .long   IRQDefault            | 0x384 User-Defined Interrupt 161
+ 217 0388 0000 0000 	  .long   IRQDefault            | 0x388 User-Defined Interrupt 162
+ 218 038c 0000 0000 	  .long   IRQDefault            | 0x38C User-Defined Interrupt 163
+ 219 0390 0000 0000 	  .long   IRQDefault            | 0x390 User-Defined Interrupt 164
+ 220 0394 0000 0000 	  .long   IRQDefault            | 0x394 User-Defined Interrupt 165
+ 221 0398 0000 0000 	  .long   IRQDefault            | 0x398 User-Defined Interrupt 166
+ 222 039c 0000 0000 	  .long   IRQDefault            | 0x39C User-Defined Interrupt 167
+ 223 03a0 0000 0000 	  .long   IRQDefault            | 0x3A0 User-Defined Interrupt 168
+ 224 03a4 0000 0000 	  .long   IRQDefault            | 0x3A4 User-Defined Interrupt 169
+ 225 03a8 0000 0000 	  .long   IRQDefault            | 0x3A8 User-Defined Interrupt 170
+ 226 03ac 0000 0000 	  .long   IRQDefault            | 0x3AC User-Defined Interrupt 171
+ 227 03b0 0000 0000 	  .long   IRQDefault            | 0x3B0 User-Defined Interrupt 172
+ 228 03b4 0000 0000 	  .long   IRQDefault            | 0x3B4 User-Defined Interrupt 173
+ 229 03b8 0000 0000 	  .long   IRQDefault            | 0x3B8 User-Defined Interrupt 174
+ 230 03bc 0000 0000 	  .long   IRQDefault            | 0x3BC User-Defined Interrupt 175
+ 231 03c0 0000 0000 	  .long   IRQDefault            | 0x3C0 User-Defined Interrupt 176
+ 232 03c4 0000 0000 	  .long   IRQDefault            | 0x3C4 User-Defined Interrupt 177
+ 233 03c8 0000 0000 	  .long   IRQDefault            | 0x3C8 User-Defined Interrupt 178
+ 234 03cc 0000 0000 	  .long   IRQDefault            | 0x3CC User-Defined Interrupt 179
+ 235 03d0 0000 0000 	  .long   IRQDefault            | 0x3D0 User-Defined Interrupt 180
+ 236 03d4 0000 0000 	  .long   IRQDefault            | 0x3D4 User-Defined Interrupt 181
+ 237 03d8 0000 0000 	  .long   IRQDefault            | 0x3D8 User-Defined Interrupt 182
+ 238 03dc 0000 0000 	  .long   IRQDefault            | 0x3DC User-Defined Interrupt 183
+ 239 03e0 0000 0000 	  .long   IRQDefault            | 0x3E0 User-Defined Interrupt 184
+ 240 03e4 0000 0000 	  .long   IRQDefault            | 0x3E4 User-Defined Interrupt 185
+ 241 03e8 0000 0000 	  .long   IRQDefault            | 0x3E8 User-Defined Interrupt 186
+ 242 03ec 0000 0000 	  .long   IRQDefault            | 0x3EC User-Defined Interrupt 187
+ 243 03f0 0000 0000 	  .long   IRQDefault            | 0x3F0 User-Defined Interrupt 188
+ 244 03f4 0000 0000 	  .long   IRQDefault            | 0x3F4 User-Defined Interrupt 189
+ 245 03f8 0000 0000 	  .long   IRQDefault            | 0x3F8 User-Defined Interrupt 190
+ 246 03fc 0000 0000 	  .long   IRQDefault            | 0x3FC User-Defined Interrupt 191
+ 247               	SYM(__vec_end):
+ 248               	
+ 249               	  .section  .text
+ 250               	
+ 251               	VecDefault:
+ 252 0000 4E73      	  rte
+ 253 0002 6000 FFFC 	  ;bra VecDefault
+ 254               	
+ 255               	IRQDefault:
+ 256 0006 4E73      	  rte
+ 257 0008 6000 FFFC 	  ;bra IRQDefault
+ 258               	
+ 259               	IRQSpurious:
+ 260 000c 4E73      	  rte
+ 261 000e 6000 FFFC 	  ;bra IRQSpurious
+ 262               	
+ 263               	TrapDefault:
+ 264 0012 4E73      	  rte
+ 265 0014 6000 FFFC 	  ;bra TrapDefault
+DEFINED SYMBOLS
+            vector.S:12     .vector:0000000000000000 __vec_start
+            vector.S:251    .text:0000000000000000 VecDefault
+            vector.S:259    .text:000000000000000c IRQSpurious
+            vector.S:255    .text:0000000000000006 IRQDefault
+            vector.S:263    .text:0000000000000012 TrapDefault
+            vector.S:247    .vector:0000000000000400 __vec_end
+
+UNDEFINED SYMBOLS
+__stack
+__start

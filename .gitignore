@@ -1,0 +1,15 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.prof
+
+# C extensions
+*.so
+*.o
+*.elf
+*.srec
+*.bin
+
+m68k-test.*
+
+board_bin/
