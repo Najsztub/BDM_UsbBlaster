@@ -16,6 +16,8 @@ I had some previous experience with scrap PCBs by using JTAG to be able to dump 
 
 Until recently I had this idea to use my STM32 acting as Altera UsbBlaster to bitbang the BDM interface.
 
+![Scrap PCB](img/img0.jpg)
+
 ## STM32 as Altera UsbBlaster
 
 I successfully used the STM32 bluepill acting as Altera UsbBlaster to program Altera CPLDs, to interface JTAG using UrJTAG and for overall development. I used one of the popular builds (e.g. see [here](https://github.com/Icenowy/USB-Blaster-GCC)). I just made sure to change bluepill pins to 5V compatible ones in the source.
@@ -108,6 +110,8 @@ Finally the machine code is written to RAM at memory position `0x20 0400`. I iss
 In the end I issue the rin command starting the execution from the `__start` position in the memory map. The `run` command stops the watchdog and exits BDM.
 
 The program runs and sends out a `Hello world` message by async serial port.
+
+![Scope results](img/img1.jpg)
 
 ## Remarks
 
