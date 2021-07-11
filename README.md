@@ -64,12 +64,11 @@ This runs the commands from the `example.cmd` file:
 
 ```
 init 
-run
 wait 0.5
 rsdump
 ```
 
-Above fragment initializes the UsbBlaster, runs the ROM for 0.5 s (still needed to initialize the device) and then halts the target by displaying system registers and in effect re-entering BDM mode.
+Above fragment initializes the UsbBlaster and then halts the target by displaying system registers and in effect re-entering BDM mode.
 
 The initialization code has a hard coded watchdog times that writes memory address `0x4f 2000` (CS10 pin) every 0.5 seconds. Without this the target resets.
 
@@ -85,6 +84,18 @@ rsset 0x0 0x200800
 
 The fragment above sets system registers, including the position of interrupt vector, user and supervisor stack, SR and just to be sure the return addres from which to start program execution.
 
+```
+mset 0xfffa44 0x3cff
+mset 0xfffa46 0x03fd
+mset 0xFFFA4C 0x2006
+mset 0xFFFA4E 0x5830
+mset 0xFFFA50 0x2006
+mset 0xFFFA52 0x3830
+mset 0xFFFA60 0x2006
+mset 0xFFFA62 0x3830
+```
+
+Here I initialize CS pins to enable 256kx16 RAM. I need to set 3 pins. CS5 for RAM enable and CS0/1 for upper and lower bytes.
 
 ```
 mfill_file example/m68k-test.bin 0x200400

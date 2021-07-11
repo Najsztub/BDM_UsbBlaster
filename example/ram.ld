@@ -9,10 +9,10 @@ __DYNAMIC  =  0;
 MEMORY
 {
   vec    (rwx) : ORIGIN = 0x00200000, LENGTH = 0x00000400
-  ram    (rwx) : ORIGIN = 0x00200400, LENGTH = 0x00040000 - 0x400
+  ram    (rwx) : ORIGIN = 0x00200400, LENGTH = 0x00080000 - 0x400
 }
 
-PROVIDE (__stack = 0x23FFFC);
+PROVIDE (__stack = 0x27FFFC);
 PROVIDE (__heap_limit = __stack);
 PROVIDE (__start = __text_start);
 PROVIDE (__vec_start = __ram_vec_start);

@@ -200,121 +200,127 @@
   31 0016 33FC 7C0C 	  move.w #0x7c0c,SYNCR
   31      00FF FA04 
   32               	
-  33               	setup_cs_pins:
-  34               	  /* CSBOOT, CS0-CS5 to 16 bit */
-  35 001e 33FC 3CFF 	  move.w #0x3cff,CSPAR0
-  35      00FF FA44 
-  36               	  /* CS10, CS9, CS8 --> 8 Bit, CS6 --> ADDR19 */
-  37 0026 33FC 03FD 	  move.w #0x03fd,CSPAR1
-  37      00FF FA46 
-  38               	
-  39               	setup_cs_ram:
-  40               	  /* CS0 to RAM, 512k */
-  41 002e 33FC 2006 	  move.w #0x2006,CSBAR0
-  41      00FF FA4C 
-  42 0036 33FC 5830 	  move.w #0x5830,CSOR0
-  42      00FF FA4E 
-  43               	
-  44               	  /* CS1 to to RAM, 512k */
-  45 003e 33FC 2006 	  move.w #0x2006,CSBAR1
-  45      00FF FA50 
-  46 0046 33FC 3830 	  move.w #0x3830,CSOR1
-  46      00FF FA52 
+  33               	setup_port_pins:
+  34 001e 13FC 0014 	  move.b #0x14, PEPAR
+  34      00FF FA17 
+  35 0026 13FC 0066 	  move.b #0x66, PFPAR
+  35      00FF FA1F 
+  36               	
+  37               	setup_cs_pins:
+  38               	  /* CSBOOT, CS0-CS5 to 16 bit */
+  39 002e 33FC 3CFF 	  move.w #0x3cff,CSPAR0
+  39      00FF FA44 
+  40               	  /* CS10, CS9, CS8 --> 8 Bit, CS6 --> ADDR19 */
+  41 0036 33FC 03FD 	  move.w #0x03fd,CSPAR1
+  41      00FF FA46 
+  42               	
+  43               	setup_cs_ram:
+  44               	  /* CS0 to RAM, 512k */
+  45 003e 33FC 2006 	  move.w #0x2006,CSBAR0
+  45      00FF FA4C 
+  46 0046 33FC 5830 	  move.w #0x5830,CSOR0
+  46      00FF FA4E 
   47               	
-  48               	  /* CS2 to RTC */
-  49 004e 33FC 4F00 	  move.w #0x4f00,CSBAR2
-  49      00FF FA54 
-  50 0056 33FC 7D70 	  move.w #0x7d70,CSOR2
-  50      00FF FA56 
+  48               	  /* CS1 to to RAM, 512k */
+  49 004e 33FC 2006 	  move.w #0x2006,CSBAR1
+  49      00FF FA50 
+  50 0056 33FC 3830 	  move.w #0x3830,CSOR1
+  50      00FF FA52 
   51               	
-  52               	  /* CS3 to 0x200000 with 64k odd byte */
-  53 005e 33FC 8000 	  move.w #0x8000,CSBAR3
-  53      00FF FA58 
-  54 0066 33FC 7830 	  move.w #0x7830,CSOR3
-  54      00FF FA5A 
+  52               	  /* CS2 to RTC */
+  53 005e 33FC 4F00 	  move.w #0x4f00,CSBAR2
+  53      00FF FA54 
+  54 0066 33FC 7D70 	  move.w #0x7d70,CSOR2
+  54      00FF FA56 
   55               	
-  56               	    /* CS4 to 0x200000 with 64k odd byte */
-  57 006e 33FC 8000 	  move.w #0x8000,CSBAR4
-  57      00FF FA5C 
-  58 0076 33FC 7830 	  move.w #0x7830,CSOR4
-  58      00FF FA5E 
+  56               	  /* CS3 to 0x200000 with 64k odd byte */
+  57 006e 33FC 8000 	  move.w #0x8000,CSBAR3
+  57      00FF FA58 
+  58 0076 33FC 7830 	  move.w #0x7830,CSOR3
+  58      00FF FA5A 
   59               	
-  60               	    /* CS5 to 0x200000 with 64k odd byte */
-  61 007e 33FC 2006 	  move.w #0x2006,CSBAR5
-  61      00FF FA60 
-  62 0086 33FC 7830 	  move.w #0x7830,CSOR5
-  62      00FF FA62 
-  63               	  
-  64               	    /* CS6 to 0x200000 with 64k odd byte */
-  65 008e 33FC 8000 	  move.w #0x8000,CSBAR6
-  65      00FF FA64 
-  66 0096 33FC 7830 	  move.w #0x7830,CSOR6
-  66      00FF FA66 
+  60               	    /* CS4 to 0x200000 with 64k odd byte */
+  61 007e 33FC 8000 	  move.w #0x8000,CSBAR4
+  61      00FF FA5C 
+  62 0086 33FC 7830 	  move.w #0x7830,CSOR4
+  62      00FF FA5E 
+  63               	
+  64               	    /* CS5 to 0x200000 with 64k odd byte */
+  65 008e 33FC 2006 	  move.w #0x2006,CSBAR5
+  65      00FF FA60 
+  66 0096 33FC 7830 	  move.w #0x7830,CSOR5
+  66      00FF FA62 
   67               	  
-  68               	    /* CS7 to 0x200000 with 64k odd byte */
-  69 009e 33FC 3007 	  move.w #0x3007,CSBAR7
-  69      00FF FA68 
-  70 00a6 33FC 78B0 	  move.w #0x78b0,CSOR7
-  70      00FF FA6A 
+  68               	    /* CS6 to 0x200000 with 64k odd byte */
+  69 009e 33FC 8000 	  move.w #0x8000,CSBAR6
+  69      00FF FA64 
+  70 00a6 33FC 7830 	  move.w #0x7830,CSOR6
+  70      00FF FA66 
   71               	  
-  72               	    /* CS8 to 0x200000 with 64k odd byte */
-  73 00ae 33FC 4005 	  move.w #0x4005,CSBAR8
-  73      00FF FA6C 
-  74 00b6 33FC 7C30 	  move.w #0x7c30,CSOR8
-  74      00FF FA6E 
+  72               	    /* CS7 to 0x200000 with 64k odd byte */
+  73 00ae 33FC 3007 	  move.w #0x3007,CSBAR7
+  73      00FF FA68 
+  74 00b6 33FC 78B0 	  move.w #0x78b0,CSOR7
+  74      00FF FA6A 
   75               	  
-  76               	    /* CS9  - D/A converter */
-  77 00be 33FC 4F10 	  move.w #0x4f10,CSBAR9
-  77      00FF FA70 
-  78 00c6 33FC 7430 	  move.w #0x7430,CSOR9
-  78      00FF FA72 
+  76               	    /* CS8 to 0x200000 with 64k odd byte */
+  77 00be 33FC 4005 	  move.w #0x4005,CSBAR8
+  77      00FF FA6C 
+  78 00c6 33FC 7C30 	  move.w #0x7c30,CSOR8
+  78      00FF FA6E 
   79               	  
-  80               	    /* CS10 to 0x4f_2000 with watchdog */
-  81 00ce 33FC 4F20 	  move.w #0x4f20,CSBAR10
-  81      00FF FA74 
-  82 00d6 33FC 6970 	  move.w #0x6970,CSOR10
-  82      00FF FA76 
-  83               	
-  84               	  /* prepare stack and frame pointer. */
-  85 00de 2E7C 0000 	  move.l  #__stack, sp
-  85      0000 
-  86 00e4 4E56 FFF8 	  link    a6, #-8
+  80               	    /* CS9  - D/A converter */
+  81 00ce 33FC 4F10 	  move.w #0x4f10,CSBAR9
+  81      00FF FA70 
+  82 00d6 33FC 7430 	  move.w #0x7430,CSOR9
+  82      00FF FA72 
+  83               	  
+  84               	    /* CS10 to 0x4f_2000 with watchdog */
+  85 00de 33FC 4F20 	  move.w #0x4f20,CSBAR10
+  85      00FF FA74 
+  86 00e6 33FC 6970 	  move.w #0x6970,CSOR10
+  86      00FF FA76 
   87               	
-  88               	  /*move.w #0x0,0x4f2000*/
-  89               	
-  90               	  /* copy vectors to ram */
-  91 00e8 4EB9 0000 	  jsr SYM(copy_vec)
-  91      0000 
-  92               	
-  93               	  /* copy data to ram */
-  94 00ee 4EB9 0000 	  jsr SYM(copy_data)
-  94      0000 
-  95               	
-  96               	  /* clear bss */
-  97 00f4 4EB9 0000 	  jsr SYM(clear_bss)
-  97      0000 
-  98               	
-  99               	  /* initialize hardware. */
- 100 00fa 4EB9 0000 	  jsr     SYM(init_main)
- 100      0000 
- 101               	
- 102               	  /* enable interrupts. */
- 103 0100 46FC 2000 	  move.w  #0x2000, sr
- 104               	
- 105               	  /* call main(int argc, char *argv[] */
- 106 0104 2F3C 0000 	  move.l  #0, -(sp)
- 106      0000 
- 107 010a 2F3C 0000 	  move.l  #0, -(sp)
- 107      0000 
- 108 0110 2F3C 0000 	  move.l  #0, -(sp)
- 108      0000 
- 109 0116 4EB9 0000 	  jsr     SYM(main)
- 109      0000 
- 110 011c 4FEF 000C 	  lea     (sp, 12), sp
- 111               	
- 112               	  /* stop on exit from main. */
- 113               	__exit:
- 114 0120 6000 FFFE 	  bra __exit
+  88               	  /* prepare stack and frame pointer. */
+  89 00ee 2E7C 0000 	  move.l  #__stack, sp
+  89      0000 
+  90 00f4 4E56 FFF8 	  link    a6, #-8
+  91               	
+  92               	  /*move.w #0x0,0x4f2000*/
+  93               	
+  94               	  /* copy vectors to ram */
+  95 00f8 4EB9 0000 	  jsr SYM(copy_vec)
+  95      0000 
+  96               	
+  97               	  /* copy data to ram */
+  98 00fe 4EB9 0000 	  jsr SYM(copy_data)
+  98      0000 
+  99               	
+ 100               	  /* clear bss */
+ 101 0104 4EB9 0000 	  jsr SYM(clear_bss)
+ 101      0000 
+ 102               	
+ 103               	  /* initialize hardware. */
+ 104 010a 4EB9 0000 	  jsr     SYM(init_main)
+ 104      0000 
+ 105               	
+ 106               	  /* enable interrupts. */
+ 107 0110 46FC 2000 	  move.w  #0x2000, sr
+ 108               	
+ 109               	  /* call main(int argc, char *argv[] */
+ 110 0114 2F3C 0000 	  move.l  #0, -(sp)
+ 110      0000 
+ 111 011a 2F3C 0000 	  move.l  #0, -(sp)
+ 111      0000 
+ 112 0120 2F3C 0000 	  move.l  #0, -(sp)
+ 112      0000 
+ 113 0126 4EB9 0000 	  jsr     SYM(main)
+ 113      0000 
+ 114 012c 4FEF 000C 	  lea     (sp, 12), sp
+ 115               	
+ 116               	  /* stop on exit from main. */
+ 117               	__exit:
+ 118 0130 6000 FFFE 	  bra __exit
 DEFINED SYMBOLS
          mc68332.inc:14     *ABS*:0000000000fffa00 SIMCR
          mc68332.inc:15     *ABS*:0000000000fffa02 SIMTR
@@ -458,9 +464,10 @@ DEFINED SYMBOLS
               crt0.S:20     .text:0000000000000006 setup_system_module
               crt0.S:25     .text:000000000000000e setup_system_protection
               crt0.S:29     .text:0000000000000016 setup_clock_module
-              crt0.S:33     .text:000000000000001e setup_cs_pins
-              crt0.S:39     .text:000000000000002e setup_cs_ram
-              crt0.S:113    .text:0000000000000120 __exit
+              crt0.S:33     .text:000000000000001e setup_port_pins
+              crt0.S:37     .text:000000000000002e setup_cs_pins
+              crt0.S:43     .text:000000000000003e setup_cs_ram
+              crt0.S:117    .text:0000000000000130 __exit
 
 UNDEFINED SYMBOLS
 __stack

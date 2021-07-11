@@ -30,6 +30,10 @@ setup_clock_module:
   /* set system clock to 16.777 MHz */
   move.w #0x7c0c,SYNCR
 
+setup_port_pins:
+  move.b #0x14, PEPAR
+  move.b #0x66, PFPAR
+
 setup_cs_pins:
   /* CSBOOT, CS0-CS5 to 16 bit */
   move.w #0x3cff,CSPAR0
