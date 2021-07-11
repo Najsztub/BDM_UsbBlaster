@@ -53,27 +53,27 @@ setup_cs_ram:
   move.w #0x4f00,CSBAR2
   move.w #0x7d70,CSOR2
 
-  /* CS3 to 0x200000 with 64k odd byte */
+  /* CS3 to ??? */
   move.w #0x8000,CSBAR3
   move.w #0x7830,CSOR3
 
-    /* CS4 to 0x200000 with 64k odd byte */
+    /* CS4 to ??? */
   move.w #0x8000,CSBAR4
   move.w #0x7830,CSOR4
 
-    /* CS5 to 0x200000 with 64k odd byte */
+    /* CS5 to RAM CE */
   move.w #0x2006,CSBAR5
   move.w #0x7830,CSOR5
   
-    /* CS6 to 0x200000 with 64k odd byte */
+    /* CS6 to ??? */
   move.w #0x8000,CSBAR6
   move.w #0x7830,CSOR6
   
-    /* CS7 to 0x200000 with 64k odd byte */
+    /* CS7 to ??? */
   move.w #0x3007,CSBAR7
   move.w #0x78b0,CSOR7
   
-    /* CS8 to 0x200000 with 64k odd byte */
+    /* CS8 to ??? */
   move.w #0x4005,CSBAR8
   move.w #0x7c30,CSOR8
   
