@@ -52,15 +52,15 @@ From this point I can issue BDM commands to the target.
 
 ## Example
 
-To show how the console works I included a simple hello world programme written in C coming with the m68k toolchain builder: https://github.com/haarer/toolchain68k
+To show how the console works I included a simple hello world program written in C coming from the m68k toolchain builder: https://github.com/haarer/toolchain68k
 
-To compile and run on my PCB I had to modify slightly the `ram.ld` linker script and the `crt0.S` assembler file. I changed the memory map so it reflects te one on the board. Also I added some instructions initializing MC68332 registers during boot. The initialization is still incomplete and I have to rely on the instructions present in the original ROM for initialization.
+To compile and run it on my PCB I had to modify slightly the `ram.ld` linker script and the `crt0.S` assembler file. I changed the memory map so it reflects te one on my board. I also added some instructions to initialize MC68332 registers during boot. The initialization is still incomplete and I have to rely on the instructions present in the original ROM for initialization.
 
-The example is made by running a simple `make` command.
+The example compiles by running the `make` command.
 
-The `make files` command prepares `.bin` file to load to the target.
+The `make files` command builds the binary `.bin` file to load to the target.
 
-The machine code is uploaded and run using the `example.cmd` by running `python pCode/BDM_shell.py` and the issuing `play example.cmd` in the BDM shell.
+The machine code is uploaded and run using the `example.cmd` by invoking `python pCode/BDM_shell.py` and the issuing `play example.cmd` in the BDM shell.
 
 This runs the commands from the `example.cmd` file:
 
@@ -72,7 +72,7 @@ rsdump
 
 Above fragment initializes the UsbBlaster and then halts the target by displaying system registers and in effect re-entering BDM mode.
 
-The initialization code has a hard coded watchdog times that writes memory address `0x4f 2000` (CS10 pin) every 0.5 seconds. Without this the target resets.
+The initialization code has a hard coded watchdog timer that writes memory address `0x4f 2000` (CS10 pin) every 0.5 seconds. Without this the target resets itself.
 
 ```
 rsset 0xe 5
@@ -84,7 +84,7 @@ rsset 0xd 0x23fffc
 rsset 0x0 0x200800
 ```
 
-The fragment above sets system registers, including the position of interrupt vector, user and supervisor stack, SR and just to be sure the return addres from which to start program execution.
+The fragment above sets the system registers, including the position of interrupt vector, user and supervisor stack, SR and just to be sure the return addres from which to start program execution.
 
 ```
 mset 0xfffa44 0x3cff
@@ -97,7 +97,7 @@ mset 0xFFFA60 0x2006
 mset 0xFFFA62 0x3830
 ```
 
-Here I initialize CS pins to enable 256kx16 RAM. I need to set 3 pins. CS5 for RAM enable and CS0/1 for upper and lower bytes.
+Here I initialize CS pins to enable 256kx16 RAM. I need to set 3 pins: CS5 for RAM enable and CS0/1 for selecting upper and lower bytes.
 
 ```
 mfill_file example/m68k-test.bin 0x200400
@@ -107,7 +107,7 @@ run 0x200800
 
 Finally the machine code is written to RAM at memory position `0x20 0400`. I issue a 1 word read from the starting point to make sure that the write was successful
 
-In the end I issue the rin command starting the execution from the `__start` position in the memory map. The `run` command stops the watchdog and exits BDM.
+In the end I issue the `run` command starting the execution from the `__start` position in the memory map. The `run` command stops the watchdog and exits BDM.
 
 The program runs and sends out a `Hello world` message by async serial port.
 
@@ -115,4 +115,6 @@ The program runs and sends out a `Hello world` message by async serial port.
 
 ## Remarks
 
-This is just a simple example created to be able to check one board. It wasn't my intention to create production grade software. I released the code in hope that some finds it usefull and take no responsibility if it fails. Use it on your own responsibility.
+This is just a simple example created to check one board. 
+
+It wasn't my intention to create a production grade software. I released the code in hope that someone finds it usefull. I take no responsibility if it fails. Use it on your own risk.
