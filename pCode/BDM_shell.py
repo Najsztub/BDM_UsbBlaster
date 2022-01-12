@@ -22,13 +22,8 @@ class PT(Thread):
 
     def run(self):
         while not self.stopped.wait(self.dt):
-            # while self.lock.locked():
-            #     pass
             self.lock.acquire()
             self.execute()
-            # curr = datetime.datetime.now()
-            # print("Time diff: " + str(curr-self.prev))
-            # self.prev = curr
             self.lock.release()
 
 
@@ -91,7 +86,9 @@ class BDMShell(cmd.Cmd):
     def do_mset(self, arg):
         'Set memory value: mset ADDRESS VALUE [w/b]'
         args = arg.split()
-        assert len(args) >= 2
+        if len(args) not in [2, 3]:
+            print("Incorrect number of arguments. Use help for details.")
+            return
         address=int(args[0], 0)
         data=int(args[1], 0)
         word = True
@@ -106,7 +103,9 @@ class BDMShell(cmd.Cmd):
     def do_mget(self, arg):
         'Get memory value: mget ADDRESS [w/b]'
         args = arg.split()
-        assert len(args) >= 1
+        if len(args) not in [1, 2]:
+            print("Incorrect number of arguments. Use help for details.")
+            return
         address=int(args[0], 0)
         word = True
         if len(args) == 2 and args[1] == 'b':
@@ -123,7 +122,9 @@ class BDMShell(cmd.Cmd):
     def do_rset(self, arg):
         'Set register value: rset REG DATA(dw)'
         args = arg.split()
-        assert len(args) == 2
+        if len(args) != 2:
+            print("Incorrect number of arguments. Use help for details.")
+            return
         reg=int(args[0], 0)
         data=int(args[1], 0)
 
@@ -137,7 +138,9 @@ class BDMShell(cmd.Cmd):
     def do_rsset(self, arg):
         'Set system register value: rset REG DATA(dw)'
         args = arg.split()
-        assert len(args) == 2
+        if len(args) != 2:
+            print("Incorrect number of arguments. Use help for details.")
+            return
         reg=int(args[0], 0)
         data=int(args[1], 0)
 
@@ -191,6 +194,9 @@ class BDMShell(cmd.Cmd):
     def do_mdump(self, arg):
         'Dump memory contents: mdump ADDRESS LENGTH b/w'
         args=arg.split()
+        if len(args) not in [2, 3]:
+            print("Incorrect number of arguments. Use help for details.")
+            return        
         start=int(args[0], 0)
         length=int(args[1], 0)
         word=True
@@ -222,6 +228,9 @@ class BDMShell(cmd.Cmd):
     def do_mdump_file(self, arg):
         'Dump memory contents to a raw bin file: mdump_file FILE ADDRESS LENGTH b/w'
         args=arg.split()
+        if len(args) not in [3, 4]:
+            print("Incorrect number of arguments. Use help for details.")
+            return
         start=int(args[1], 0)
         length=int(args[2], 0)
         word=True
@@ -255,8 +264,11 @@ class BDMShell(cmd.Cmd):
         print("\nEnd.")
 
     def do_mfill_file(self, arg):
-        'TODO: Fill memory contents with a raw bin file: mfill_file FILE ADDRESS '
+        'Fill memory contents with a raw bin file: mfill_file FILE ADDRESS '
         args=arg.split()
+        if len(args) != 2:
+            print("Incorrect number of arguments. Use help for details.")
+            return
         start=int(args[1], 0)
         start_0 = copy.copy(start)
         word=True
@@ -265,9 +277,12 @@ class BDMShell(cmd.Cmd):
 
         step_b = 0x40
         step_w = (step_b << 1)
-        # TODO: Handle except
-        file_size = os.path.getsize(args[0])
-
+        # Get file size
+        try:
+            file_size = os.path.getsize(args[0])
+        except FileNotFoundError:
+            print('File %s not found!\n' % args[0])
+            return
         print("Fill mem from 0x%04x with 0x%04x bytes" % (start, file_size))
 
         with open(args[0], 'rb') as f:
