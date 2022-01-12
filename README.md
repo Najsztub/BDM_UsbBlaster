@@ -50,7 +50,7 @@ To enter BDM mode I pull down the RESET(TMS) and TCK pins and release only the R
 
 From this point I can issue BDM commands to the target.
 
-## Example
+## Example 1
 
 To show how the console works I included a simple hello world program written in C coming from the m68k toolchain builder: https://github.com/haarer/toolchain68k
 
@@ -113,8 +113,59 @@ The program runs and sends out a `Hello world` message by async serial port.
 
 ![Scope results](img/img1.jpg)
 
+## Example 2
+
+Another recently obtained board with BDM debug port is a Roche RT-CPU 68360 controll board with:
+
+* [MC68EN360](https://www.nxp.com/docs/en/reference-manual/MC68360UM.pdf) - an ethernet enabled version of 68360;
+* [Intel LXT907](https://datasheet.octopart.com/SLXT970AQC.B11-Intel-datasheet-17853657.pdf) Universal 10BASE-T and AUI Transceiver;
+* [TS87C52X2](http://ww1.microchip.com/downloads/en/devicedoc/doc4184.pdf) - A 8k EPROM version of 8051. Buffered with a double 512 byte FIFO;
+* AM29F040 - 512kx8 bit Flash ROM used for booting;
+* 4xAM29F080 - 1Mx8 bit Flash ROM - containing program memory;
+* 2 SRAM (512kx8 bit) & 2 DRAM (1Mx16 bit) chips;
+* RTC with battery;
+* two Lattice CPLDs - for external bus control (?).
+
+Overall the system forms a nice SBC to play with.
+
+![68360 SBC](img/img2.jpg)
+
+According to the manual the 68360 maps internal registers using the address in the module base address register (MBAR), which is accessible only in the CPU space under address `0x0003_FF00`. This means that to access it I first had to set the SCF & DFC registers.
+
+I executed the folowing commands after running the Python script that detected my USBBlaster.
+
+```
+init
+rsdump
+rsset 0xe 7
+rsset 0xf 7
+mdump 0x0003FF00 0x2 w
+```
+
+I get `0x0700_0000` as the dual-port RAM base (DPRBASE) address. To access it I must exit CPU space.
+
+Also the most instersting part holding the QUICC SIM Registers Memory Map it at DPRBASE+0x1000, called the register base (REGB).
+
+The [linked manual](https://www.nxp.com/docs/en/reference-manual/MC68360UM.pdf) on p. 71 presents a simple table of all SIM register functionalities. Registers REGB + 0x40-0xff are the registers which I am after, holding the settings for the memory controller. It also holds 8 Base Registers (BR) and Option Registers (OR) holding the address spaces and settings for memory present on the board.
+
+The registers can be viewed after simply exiting CPU space:
+
+```
+rsset 0xe 5
+rsset 0xf 5
+mdump 0x7001040 0x60 w
+```
+
+In my case I found that the 4Mbytes of Flash ROM starts at `0x0200_0000`. I then could dump the memory contents to disassemble it, so I could learn more about he device.
+
+```
+mdump_file d0200.bin 0x02000000 0x200000 w
+```
+
+I reccomend [Ghidra](https://github.com/NationalSecurityAgency/ghidra/releases) for decompilation and using the 68020 instruction set. It works.
+
 ## Remarks
 
-This is just a simple example created to check one board. 
+This is just a simple example created to check one board. Turns out it also works for a second one.
 
 It wasn't my intention to create a production grade software. I released the code in hope that someone finds it usefull. I take no responsibility if it fails. Use it on your own risk.
