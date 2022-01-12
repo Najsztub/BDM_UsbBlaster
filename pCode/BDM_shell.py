@@ -33,7 +33,9 @@ class BDMShell(cmd.Cmd):
 
     # ----- basic commands -----
     def do_reset(self, arg):
-        'Clear the screen and return turtle to center:  RESET'
+        'Hardware reset device and run.'
+        self.bdm.ep.write(RST)
+        self.close()
         
     def do_init(self, arg):
         'Reset Device and stop: INIT'
