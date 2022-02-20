@@ -322,6 +322,11 @@ class BDMShell(cmd.Cmd):
         self.bdm.bdm_out(0x0c00)
         self.bdm.run = True
 
+    def precmd(self, line):
+        # Include ; or # as comments
+        if len(line) > 0 and line[0] in [';', '#']:
+            return ''
+        return line
 
     def wtd_poke(self):
         if self.bdm.run == True: 
