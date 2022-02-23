@@ -89,6 +89,11 @@ class BDM:
         # time.sleep(1 / 1000)
         return outBytes
 
+    def reset(self):
+        self.ep.write(RST)
+
+    def brk(self):
+        self.ep.write(BRK)
 
     def read_word(self):
         cmd = [TMS, TMS+TCK, READ + TMS, SHMODE + 2 + READ, 0, 0]

@@ -15,6 +15,7 @@ class PT(Thread):
         self.execute = hFunction
         self.lock = lock
         self.prev = datetime.datetime.now()
+        self.stopped.set()
 
     def stop(self):
         self.stopped.set()
@@ -32,14 +33,25 @@ class BDMShell(cmd.Cmd):
     prompt = '(BDM) '
 
     # ----- basic commands -----
+    def do_msg(self, arg):
+        'Print message'
+        print(arg)
+
     def do_reset(self, arg):
         'Hardware reset device and run.'
-        self.bdm.ep.write(RST)
+        self.bdm.reset()
         self.close()
+
+    def do_brk(self, arg):
+        'Break execution.'
+        self.bdm.brk()
+
+    def do_nop(self, arg):
+        'No operation.'
         
     def do_init(self, arg):
         'Reset Device and stop: INIT'
-        self.bdm.ep.write(RST)
+        self.bdm.reset()
         resp = self.bdm.dev.read(0x81, 64, 100)
         time.sleep(10 / 1000)
         self.bdm.save_sys_registers()
@@ -54,7 +66,10 @@ class BDMShell(cmd.Cmd):
 
         # Enable watchdog
         self.bdm.run = False
-        self.do_wtd("start")
+        self.wtd = PT(0.5, self.wtd_poke, self.bdm.lock)
+        args = arg.split()
+        if len(args) == 0 or args[0] != 'nowtd': 
+            self.do_wtd("start")
 
     def do_run(self, arg):
         'Resume execution: run [ADDRESS]'
@@ -81,7 +96,7 @@ class BDMShell(cmd.Cmd):
         'Start execution, close the BDM window, and exit:  BYE'
         print('BDM Exits')
         self.close()
-        if self.wtd is not None:
+        if self.wtd is not None and not self.wtd.stopped.is_set:
             self.wtd.stop()
         return True
 
@@ -112,6 +127,7 @@ class BDMShell(cmd.Cmd):
         word = True
         if len(args) == 2 and args[1] == 'b':
             word = False
+        self.bdm.run = False
         self.bdm.lock.acquire()
         self.bdm.bdm_out(0x1900 + word * 0x40)
         self.bdm.bdm_out(address >> 16)
@@ -119,7 +135,6 @@ class BDMShell(cmd.Cmd):
         inw = self.bdm.bdm_in(2)
         self.bdm.lock.release()
         print("0x%04x: 0x%04x" % (address, inw[3]))
-        self.bdm.run = False
 
     def do_rset(self, arg):
         'Set register value: rset REG DATA(dw)'
@@ -130,12 +145,12 @@ class BDMShell(cmd.Cmd):
         reg=int(args[0], 0)
         data=int(args[1], 0)
 
+        self.bdm.run = False
         self.bdm.lock.acquire()
         self.bdm.bdm_out(0x2080+reg)
         self.bdm.bdm_out(data >> 16)
         self.bdm.bdm_out(data & 0xffff)
         self.bdm.lock.release()
-        self.bdm.run = False
 
     def do_rsset(self, arg):
         'Set system register value: rset REG DATA(dw)'
@@ -146,12 +161,12 @@ class BDMShell(cmd.Cmd):
         reg=int(args[0], 0)
         data=int(args[1], 0)
 
+        self.bdm.run = False
         self.bdm.lock.acquire()
         self.bdm.bdm_out(0x2480+reg)
         self.bdm.bdm_out(data >> 16)
         self.bdm.bdm_out(data & 0xffff)
         self.bdm.lock.release()
-        self.bdm.run = False
 
 
     def do_rsdump(self, arg):
@@ -188,10 +203,10 @@ class BDMShell(cmd.Cmd):
             # Enable CS10 as WTD
             self.bdm.mwrite(0xff_fa74, 0x4f20)
             self.bdm.mwrite(0xff_fa76, 0x6970)
-            self.wtd = PT(0.5, self.wtd_poke, self.bdm.lock)
             self.wtd.start()
         if args[0] == 'stop':
-            self.wtd.stop()
+            if not self.wtd.stopped.is_set:
+                self.wtd.stop()
 
     def do_mdump(self, arg):
         'Dump memory contents: mdump ADDRESS LENGTH b/w'
@@ -285,7 +300,7 @@ class BDMShell(cmd.Cmd):
         except FileNotFoundError:
             print('File %s not found!\n' % args[0])
             return
-        print("Fill mem from 0x%04x with 0x%04x bytes" % (start, file_size))
+        print("Fill mem from 0x%04x with %i (0x%04x) bytes" % (start, file_size, file_size))
 
         with open(args[0], 'rb') as f:
             for block in range(math.ceil(file_size / step_b)):
@@ -303,18 +318,27 @@ class BDMShell(cmd.Cmd):
                     self.bdm.bdm_out(out_w)
                 start += step_b
                 self.bdm.lock.release()
-        print("\nEnd.")
+        print("\nFill finished.")
 
     def do_play(self, arg):
         'Playback commands from a file:  play rose.cmd'
         self.close()
+        self.in_play_mode = True
         with open(arg) as f:
             self.cmdqueue.extend(f.read().splitlines())
+        self.in_play_mode = False
 
     #####################################################################
     def preloop(self):
         self.bdm = BDM()
         self.wtd = None
+        self.in_play_mode = False
+
+    def emptyline(self):
+        # if self.in_play_mode is False and self.lastcmd:
+        #     return self.onecmd(self.lastcmd)
+        return False
+        
 
     def close(self):
         # if self.wtd is not None:
@@ -324,12 +348,12 @@ class BDMShell(cmd.Cmd):
 
     def precmd(self, line):
         # Include ; or # as comments
-        if len(line) > 0 and line[0] in [';', '#']:
-            return ''
+        if len(line) > 0 and line[0] in [';', '#', '\n']:
+            return 'nop\n'
         return line
 
     def wtd_poke(self):
-        if self.bdm.run == True: 
+        if self.bdm.run == True or self.wtd.stopped.is_set: 
             return
         # print('Poke')
         wtd = 0x4f_2000
