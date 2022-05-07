@@ -288,7 +288,7 @@ class BDMShell(cmd.Cmd):
             return
         start=int(args[1], 0)
         start_0 = copy.copy(start)
-        word=True
+        word = True
         
         self.bdm.run = False
 

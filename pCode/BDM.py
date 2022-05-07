@@ -18,10 +18,8 @@ SHMODE = (1 << 7)  # Byte shift mode <- for passive serial transfer
 
 # Initialize BDM 
 RST_BRK = [LED,LED,LED,LED, LED+TMS, LED+TMS, LED+TMS, LED+TMS, LED+TMS]
-# RST_BRK = [LED+TMS, LED+TMS, LED+TMS,LED,LED,LED,LED, LED+TMS, LED+TMS, LED+TMS, LED+TMS, LED+TMS, LED + TMS+ TCK]
 # init_seq = [LED+TMS, LED+TMS, LED+TMS, LED+TMS, LED+TMS, LED + TMS+ TCK, LED + TMS+ TCK, LED + TMS]
 RST = [LED,LED,LED,LED, LED+TMS]
-# BRK = [TMS+LED, TMS+LED, LED, LED, TMS+LED, TMS+LED]
 BRK = [TMS+LED, TMS+LED+TCK]
 
 
@@ -47,8 +45,6 @@ def reverse_bit(num, base=8):
         num >>= 1
     return result
 
-
-
 class BDM:
     def __init__(self):
         # Find USB Blaster
@@ -71,6 +67,7 @@ class BDM:
             usb.util.endpoint_direction(e.bEndpointAddress) == \
             usb.util.ENDPOINT_OUT)
 
+        # Make sure we found an endpoint
         assert self.ep is not None
 
         self.sys_registers = []
@@ -80,7 +77,9 @@ class BDM:
         self.run = True
 
     def bdm_out(self, wd):
-
+        """
+        Write word to BDM using bitbanging.
+        """
         out_wd = [False] + [((wd << sh) & 0x8000) == 0x8000 for sh in range(0, 16)]
         # bb = [[TDI+TMS,TDI+TMS, TMS+TCK+TDI,TMS+TCK+TDI, TMS+TDI, TMS] if bt else [TMS,TMS,TMS+TCK, TMS+TCK, TMS, TMS]  for bt in out_wd]
         bb = [[TDI+TMS, TMS+TCK+TDI] if bt else [TMS, TMS+TCK] for bt in out_wd]
@@ -96,10 +95,14 @@ class BDM:
         self.ep.write(BRK)
 
     def read_word(self):
-        cmd = [TMS, TMS+TCK, READ + TMS, SHMODE + 2 + READ, 0, 0]
+        """
+        Read word from BDM. Use UsbBlaster passive serial shift mode to do this.
+
+        Return a list of [response, value]
+        """
+        cmd = [TMS, TMS + TCK, READ + TMS, SHMODE + 2 + READ, 0, 0]
         outBytes = self.ep.write(cmd)
         resp = self.dev.read(0x81, 64, 100)
-        # resp = self.dev.read(0x81, 64, 100)
         resp = resp[2:]
         # print([hex(x) for x in resp])
         if len(resp) > 0:
@@ -112,6 +115,9 @@ class BDM:
 
 
     def read_word_bb(self):
+        """
+        Read word from BDM using bitbanging - slower, but gives more control for debugging.
+        """
         cmd = [TMS, TMS+TCK, TMS+READ] + 16*[TMS+TCK, READ + TMS]
         outBytes = self.ep.write(cmd)
         resp = self.dev.read(0x81, 64, 100)
@@ -125,10 +131,16 @@ class BDM:
 
 
     def bdm_in(self, resp=3):
+        """
+        Read BDM response <- actual method to use to interface BDM.
+        """
         bb = [self.read_word() for _ in range(resp)]
         return [j for i in bb for j in i]
         
     def save_sys_registers(self):
+        """
+        BDM command to save system registers.
+        """
         self.sys_registers = []
         for reg in sys_registers:
             self.bdm_out(0x2580+reg[2])
@@ -136,6 +148,9 @@ class BDM:
             self.sys_registers.append((reg[2], sys_reg[3], sys_reg[5]))
 
     def restore_sys_registers(self):
+        """
+        BDM command to restore system registers.
+        """
         if len(self.sys_registers) == 0:
             return
         self.lock.acquire()
@@ -146,6 +161,9 @@ class BDM:
         self.lock.release()
 
     def mwrite(self, address, value, word=True):
+        """
+        BDM command to write to memory.
+        """
         # self.lock.acquire()
         self.bdm_out(0x1800 + word * 0x40)
         self.bdm_out(address >> 16)
@@ -155,6 +173,9 @@ class BDM:
 
 
     def mem_dump(self, start, length, word=True):
+        """
+        BDM command to read from memory.
+        """
         print("Mem from %s" % (str(hex(start))))
         self.bdm_out(0x1900 + word * 0x40)
         self.bdm_out(start >> 16)
